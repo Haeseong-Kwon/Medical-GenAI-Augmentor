@@ -35,10 +35,19 @@ yarn-error.log*
 
 # vercel
 .vercel
-
+ 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+ 
+# clinical/ml data
 *.pth
 *.safetensors
 outputs/
+ 
+# python
+venv/
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+

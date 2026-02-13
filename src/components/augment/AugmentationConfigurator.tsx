@@ -1,12 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Beaker, Search, Sparkles, Send, Ban } from 'lucide-react';
-import { AugmentationModel } from '@/types/augmentor';
+import { Beaker, Search, Sparkles, Send, Ban, Network } from 'lucide-react';
+import { AugmentationModel, ControlNetParams } from '@/types/augmentor';
 import ConditioningPanel, { ConditioningParams } from './ConditioningPanel';
+import ControlNetConfig from './ControlNetConfig';
 
 interface ConfiguratorProps {
-    onStartJob: (model: AugmentationModel, sampleCount: number, prompt: string, negativePrompt: string, conditioning: ConditioningParams) => void;
+    onStartJob: (
+        model: AugmentationModel,
+        sampleCount: number,
+        prompt: string,
+        negativePrompt: string,
+        conditioning: ConditioningParams,
+        controlNet?: ControlNetParams
+    ) => void;
     isGenerating: boolean;
 }
 
@@ -16,16 +24,21 @@ export default function AugmentationConfigurator({ onStartJob, isGenerating }: C
     const [sampleCount, setSampleCount] = useState(10);
     const [prompt, setPrompt] = useState('');
     const [negativePrompt, setNegativePrompt] = useState('blurry, low quality, distorted, artifact, text, signature');
+    const [showControlNet, setShowControlNet] = useState(false);
     const [conditioning, setConditioning] = useState<ConditioningParams>({
         label: 'normal',
         guidanceScale: 7.5,
         samplingSteps: 50,
         seed: 42,
     });
+    const [controlNet, setControlNet] = useState<ControlNetParams>({
+        mode: 'canny',
+        strength: 0.8,
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onStartJob(model, sampleCount, prompt, negativePrompt, conditioning);
+        onStartJob(model, sampleCount, prompt, negativePrompt, conditioning, showControlNet ? controlNet : undefined);
     };
 
     return (
@@ -111,6 +124,23 @@ export default function AugmentationConfigurator({ onStartJob, isGenerating }: C
                     onGeneratePrompt={setPrompt}
                 />
 
+                <div>
+                    <button
+                        type="button"
+                        onClick={() => setShowControlNet(!showControlNet)}
+                        className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${showControlNet ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50' : 'bg-white/5 text-white/40 border border-transparent'
+                            }`}
+                    >
+                        <Network className="w-4 h-4" />
+                        ControlNet Constraints
+                    </button>
+
+                    {showControlNet && (
+                        <div className="mt-4 animate-in slide-in-from-top-2 duration-200">
+                            <ControlNetConfig params={controlNet} onChange={setControlNet} />
+                        </div>
+                    )}
+                </div>
 
                 <button
                     type="submit"

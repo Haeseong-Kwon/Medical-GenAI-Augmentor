@@ -6,3 +6,6 @@ accelerate
 clean-fid
 scipy
 numpy
+opencv-python
+controlnet_aux
+requests

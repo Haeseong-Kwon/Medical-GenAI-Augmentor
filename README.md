@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Medical GenAI Augmentor
+
+[![Phase](https://img.shields.io/badge/Phase-4%20Complete-blueviolet?style=for-the-badge)](https://github.com/Haeseong-Kwon/Medical-GenAI-Augmentor)
+
+## Overview
+**Medical GenAI Augmentor** is a high-fidelity diagnostic data augmentation framework designed to solve clinical class imbalance. By leveraging **Conditional Diffusion Models** and **ControlNet**, the platform generates anatomically consistent medical imagery (X-rays, MRIs, etc.) that follows strict spatial constraints and radiological structures.
+
+## Core Features
+- 🧠 **Advanced Conditioning**: Precise control over disease labels (Normal, Pneumonia, Effusion, etc.) with real-time parameter tuning.
+- 📐 **ControlNet Integration**: Structural guidance using Canny Edge and Depth Map reference uploader to maintain anatomical integrity.
+- 🧪 **Real-time Feedback**: Interactive denoising previews allow researchers to monitor generation progress at every sampling step.
+- 🛡️ **Expert Validation**: In-the-loop clinical review system where experts can rate and validate synthetic samples before inclusion in training sets.
+- 📊 **Impact Analytics**: Automated performance evaluation visualizing the accuracy boost and dataset re-balancing delta.
+- 📄 **Research Reports**: One-click professional PDF report generation documenting simulation parameters and validation results.
+
+## Technical Stack
+- **Frontend**: Next.js 14 (App Router), Tailwind CSS, Framer Motion
+- **State/Realtime**: Supabase Realtime & Postgres
+- **Visualization**: Recharts, Lucide React
+- **Report Engine**: jsPDF, html2canvas
+- **AI Backend**: Stable Diffusion + ControlNet (MPS Optimized Inference Logic)
 
 ## Getting Started
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Configure `.env.local` with your Supabase credentials.
+4. Run the development server: `npm run dev`
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Clinical Impact
+This framework significantly reduces the "Medical Data Scarcity" problem by providing a secure, validated environment to generate rare pathology cases, ultimately improving the sensitivity and specificity of AI diagnostic models.

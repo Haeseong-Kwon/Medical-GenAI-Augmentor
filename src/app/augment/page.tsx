@@ -4,12 +4,19 @@ import React, { useState, useEffect } from 'react';
 import AugmentationConfigurator from '@/components/augment/AugmentationConfigurator';
 import StatusBoard from '@/components/augment/StatusBoard';
 import SyntheticGallery from '@/components/augment/SyntheticGallery';
-import { AugmentationJob, SyntheticSample, AugmentationModel } from '@/types/augmentor';
+import ImpactChart from '@/components/augment/ImpactChart';
+import AugmentReport from '@/components/reports/AugmentReport';
+import { AugmentationJob, SyntheticSample, AugmentationModel, ValidationRecord, ControlNetParams } from '@/types/augmentor';
 import { supabase } from '@/lib/supabase';
-import { BrainCircuit, Layers, Database } from 'lucide-react';
+import { BrainCircuit, Layers, Database, ShieldCheck, BarChart4, ClipboardList } from 'lucide-react';
+
+
+
 
 export default function AugmentPage() {
+    const [activeTab, setActiveTab] = useState<'config' | 'eval'>('config');
     const [jobs, setJobs] = useState<AugmentationJob[]>([]);
+
     const [samples, setSamples] = useState<SyntheticSample[]>([]);
     const [isGenerating, setIsGenerating] = useState(false);
 
@@ -28,7 +35,8 @@ export default function AugmentPage() {
         sampleCount: number,
         prompt: string,
         negativePrompt: string,
-        conditioning: any
+        conditioning: any,
+        controlNet?: ControlNetParams
     ) => {
         setIsGenerating(true);
 
@@ -45,6 +53,7 @@ export default function AugmentPage() {
             samplingSteps: conditioning.samplingSteps,
             seed: conditioning.seed,
             progress: 0,
+            controlNet,
         };
 
         setJobs((prev) => [newJob, ...prev]);
@@ -66,21 +75,26 @@ export default function AugmentPage() {
 
             // Simulate real-time sample arrival at 50% and 90%
             if (currentProgress === 50 || currentProgress === 90) {
-                addMockSample(newJob.id, conditioning.label);
+                addMockSample(newJob.id);
             }
         }, 1000);
     };
 
-    const addMockSample = (jobId: string, label: string) => {
-        const mockSample: SyntheticSample = {
+    const addMockSample = (jobId: string) => {
+        const newSample: SyntheticSample = {
             id: Math.random().toString(36).substr(2, 9),
             jobId,
             imageUrl: `https://picsum.photos/seed/${Math.random()}/512/512`,
-            fidScore: 0.12 + Math.random() * 0.05,
-            label,
+            fidScore: 0.15 + Math.random() * 0.1,
             createdAt: new Date().toISOString(),
         };
-        setSamples((prev) => [mockSample, ...prev]);
+        setSamples((prev: SyntheticSample[]) => [newSample, ...prev]);
+    };
+
+    const updateJobProgress = (jobId: string, progress: number) => {
+        setJobs((prev: AugmentationJob[]) =>
+            prev.map((j: AugmentationJob) => (j.id === jobId ? { ...j, progress, denoisingStep: Math.floor(progress / 2) } : j))
+        );
     };
 
     const finishJob = (jobId: string) => {
@@ -88,16 +102,39 @@ export default function AugmentPage() {
             prev.map((j) => (j.id === jobId ? { ...j, status: 'completed', progress: 100 } : j))
         );
         setIsGenerating(false);
-        const job = jobs.find(j => j.id === jobId);
-        const mockSamples: SyntheticSample[] = Array.from({ length: 4 }).map((_, i) => ({
-            id: Math.random().toString(36).substr(2, 9),
-            jobId,
-            imageUrl: `https://picsum.photos/seed/${Math.random()}/512/512`, // Placeholder images
-            fidScore: 0.12 + Math.random() * 0.05,
-            createdAt: new Date().toISOString(),
+    };
+
+    const handleUpdateSample = (sampleId: string, validation: ValidationRecord) => {
+        setSamples((prev) =>
+            prev.map((s) => (s.id === sampleId ? { ...s, isValidated: true, validation } : s))
+        );
+    };
+
+    const handleExportDataset = () => {
+        const validatedSamples = samples.filter(s => s.isValidated && s.validation?.isValid);
+        if (validatedSamples.length === 0) return;
+
+        const dataset = validatedSamples.map(s => ({
+            id: s.id,
+            image_url: s.imageUrl,
+            label: s.label,
+            fid_score: s.fidScore,
+            validation: {
+                score: s.validation?.score,
+                notes: s.validation?.comment,
+                author: s.validation?.author,
+            }
         }));
 
-        setSamples((prev) => [...mockSamples, ...prev]);
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataset, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `medical_dataset_export_${new Date().toISOString().slice(0, 10)}.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+
+        alert(`Successfully exported ${validatedSamples.length} validated samples to JSON.`);
     };
 
     return (
@@ -132,16 +169,59 @@ export default function AugmentPage() {
                     </div>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Main Controls */}
-                    <div className="lg:col-span-2 space-y-8">
-                        <AugmentationConfigurator onStartJob={handleStartJob} isGenerating={isGenerating} />
-                        <SyntheticGallery samples={samples} />
+                <div className="max-w-[1400px] mx-auto space-y-12">
+                    {/* Tab Navigation */}
+                    <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 w-fit">
+                        <button
+                            onClick={() => setActiveTab('config')}
+                            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'config' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white/60'
+                                }`}
+                        >
+                            <Layers className="w-4 h-4" />
+                            Augmentation Desk
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('eval')}
+                            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'eval' ? 'bg-purple-600 text-white shadow-lg' : 'text-white/40 hover:text-white/60'
+                                }`}
+                        >
+                            <BarChart4 className="w-4 h-4" />
+                            Impact Analysis
+                        </button>
                     </div>
 
-                    {/* Sidebar */}
-                    <div className="lg:col-span-1">
-                        <StatusBoard jobs={jobs} />
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                        {/* Main Content Area */}
+                        <div className="lg:col-span-2 space-y-8">
+                            {activeTab === 'config' ? (
+                                <>
+                                    <AugmentationConfigurator onStartJob={handleStartJob} isGenerating={isGenerating} />
+                                    <SyntheticGallery
+                                        samples={samples}
+                                        onUpdateSample={handleUpdateSample}
+                                        onExportDataset={handleExportDataset}
+                                    />
+                                </>
+                            ) : (
+                                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    <ImpactChart />
+                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                                        <AugmentReport
+                                            jobCount={jobs.length}
+                                            sampleCount={samples.length}
+                                            avgFid={samples.length > 0 ? samples.reduce((acc: number, s: SyntheticSample) => acc + s.fidScore, 0) / samples.length : 0}
+                                            validatedCount={samples.filter((s: SyntheticSample) => s.isValidated && s.validation?.isValid).length}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Sidebar */}
+                        <div className="space-y-8">
+                            <StatusBoard jobs={jobs} />
+
+                        </div>
                     </div>
                 </div>
             </div>
