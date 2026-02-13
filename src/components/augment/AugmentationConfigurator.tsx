@@ -1,22 +1,31 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Beaker, Search, Sparkles, Send } from 'lucide-react';
+import { Beaker, Search, Sparkles, Send, Ban } from 'lucide-react';
 import { AugmentationModel } from '@/types/augmentor';
+import ConditioningPanel, { ConditioningParams } from './ConditioningPanel';
 
 interface ConfiguratorProps {
-    onStartJob: (model: AugmentationModel, sampleCount: number, prompt: string) => void;
+    onStartJob: (model: AugmentationModel, sampleCount: number, prompt: string, negativePrompt: string, conditioning: ConditioningParams) => void;
     isGenerating: boolean;
 }
+
 
 export default function AugmentationConfigurator({ onStartJob, isGenerating }: ConfiguratorProps) {
     const [model, setModel] = useState<AugmentationModel>('Diffusion');
     const [sampleCount, setSampleCount] = useState(10);
     const [prompt, setPrompt] = useState('');
+    const [negativePrompt, setNegativePrompt] = useState('blurry, low quality, distorted, artifact, text, signature');
+    const [conditioning, setConditioning] = useState<ConditioningParams>({
+        label: 'normal',
+        guidanceScale: 7.5,
+        samplingSteps: 50,
+        seed: 42,
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onStartJob(model, sampleCount, prompt);
+        onStartJob(model, sampleCount, prompt, negativePrompt, conditioning);
     };
 
     return (
@@ -34,8 +43,8 @@ export default function AugmentationConfigurator({ onStartJob, isGenerating }: C
                             type="button"
                             onClick={() => setModel('GAN')}
                             className={`p-4 rounded-xl border transition-all flex flex-col items-center gap-2 ${model === 'GAN'
-                                    ? 'bg-blue-600/40 border-blue-400 shadow-lg shadow-blue-500/20'
-                                    : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                ? 'bg-blue-600/40 border-blue-400 shadow-lg shadow-blue-500/20'
+                                : 'bg-white/5 border-white/10 hover:bg-white/10'
                                 }`}
                         >
                             <Search className="w-5 h-5 text-blue-300" />
@@ -46,8 +55,8 @@ export default function AugmentationConfigurator({ onStartJob, isGenerating }: C
                             type="button"
                             onClick={() => setModel('Diffusion')}
                             className={`p-4 rounded-xl border transition-all flex flex-col items-center gap-2 ${model === 'Diffusion'
-                                    ? 'bg-purple-600/40 border-purple-400 shadow-lg shadow-purple-500/20'
-                                    : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                ? 'bg-purple-600/40 border-purple-400 shadow-lg shadow-purple-500/20'
+                                : 'bg-white/5 border-white/10 hover:bg-white/10'
                                 }`}
                         >
                             <Sparkles className="w-5 h-5 text-purple-300" />
@@ -80,9 +89,28 @@ export default function AugmentationConfigurator({ onStartJob, isGenerating }: C
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         placeholder="e.g., T2-weighted axial brain MRI showing multiple sclerosis lesions in the periventricular region..."
-                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-white/20 h-32 resize-none"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-white/20 h-24 resize-none mb-4"
                     />
+
+                    <div className="relative">
+                        <div className="absolute left-4 top-4 text-red-400">
+                            <Ban className="w-4 h-4" />
+                        </div>
+                        <textarea
+                            value={negativePrompt}
+                            onChange={(e) => setNegativePrompt(e.target.value)}
+                            placeholder="Negative prompt (e.g., blurry, text...)"
+                            className="w-full bg-red-950/20 border border-red-500/20 rounded-xl py-3 pl-10 pr-4 text-xs focus:ring-2 focus:ring-red-500 outline-none transition-all placeholder:text-red-400/20 h-16 resize-none"
+                        />
+                    </div>
                 </div>
+
+                <ConditioningPanel
+                    params={conditioning}
+                    onChange={setConditioning}
+                    onGeneratePrompt={setPrompt}
+                />
+
 
                 <button
                     type="submit"

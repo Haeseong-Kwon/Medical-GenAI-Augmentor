@@ -1,10 +1,15 @@
-import torch
-from diffusers import StableDiffusionPipeline
 import supabase
 import os
 from PIL import Image
 import io
 import datetime
+import asyncio
+from inference_logic import generate_medical_image_with_embeddings, MODEL_NAME
+from clean_fid.fid_score import calculate_fid_given_paths
+import numpy as np
+import random # For FID reference image generation
+import tempfile # For FID reference image generation
+import shutil # For FID reference image generation
 
 # 1. Supabase Configuration (UPDATE THESE WITH YOUR ACTUAL CREDENTIALS)
 # You can find these in your Supabase project settings -> API
@@ -17,31 +22,6 @@ if SUPABASE_URL == "https://phkpdwzhduwtvktapkhr.supabase.co" or SUPABASE_KEY ==
     # For now, we'll allow it to run but Supabase functions will fail.
 
 supabase_client = supabase.create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# 2. MPS Acceleration Setup (for MacBook Pro)
-if torch.backends.mps.is_available():
-    device = "mps"
-    print("Using Apple Metal Performance Shaders (MPS) for acceleration.")
-elif torch.cuda.is_available():
-    device = "cuda"
-    print("Using NVIDIA CUDA for acceleration.")
-else:
-    device = "cpu"
-    print("Using CPU for inference. Consider installing PyTorch with MPS/CUDA support for better performance.")
-
-# 3. Synthetic Image Generator Shell: Load a Stable Diffusion model
-# Note: For actual medical imaging, a model fine-tuned on medical data would be ideal.
-# This example uses a general-purpose Stable Diffusion model.
-print(f"Loading Stable Diffusion pipeline to device: {device}...")
-try:
-    pipe = StableDiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16 if device == "mps" or device == "cuda" else torch.float32)
-    pipe.to(device)
-    print("Model loaded successfully.")
-except Exception as e:
-    print(f"Error loading model: {e}")
-    print("Please ensure you have authenticated with Hugging Face if you encounter access errors.")
-    print("You might need to run: `huggingface-cli login` in your terminal.")
-    exit()
 
 # 4. Medical Prompt Engineering
 def create_medical_prompt(base_prompt: str) -> str:
@@ -64,18 +44,35 @@ def create_medical_prompt(base_prompt: str) -> str:
     print(f"Augmented prompt: '{augmented_prompt}'")
     return augmented_prompt
 
-def generate_image(prompt: str, num_inference_steps: int = 50) -> Image.Image:
-    """Generates an image using the loaded Stable Diffusion pipeline."""
-    print(f"Generating image for prompt: '{prompt}'")
-    with torch.no_grad():
-        image = pipe(prompt, num_inference_steps=num_inference_steps).images[0]
-    print("Image generated.")
-    return image
+def calculate_fid_score(generated_image: Image.Image, prompt: str) -> float:
+    """
+    Calculates the FID score between the generated image and a set of reference images.
+    For this prototype, we will generate a second synthetic image as a reference.
+    In a real application, the reference set would be a dataset of real medical images.
+    """
+    print("Calculating FID score...")
+
+    # Create temporary directories for images
+    with tempfile.TemporaryDirectory() as gen_dir, tempfile.TemporaryDirectory() as ref_dir:
+        generated_image_path = os.path.join(gen_dir, "gen_0.png")
+        generated_image.save(generated_image_path)
+
+        # For the reference set, let's generate another image with a different seed
+        # In a real scenario, this would be actual real medical images
+        ref_image, _, _ = generate_medical_image_with_embeddings(prompt, seed=random.randint(0, 1000000))
+        ref_image_path = os.path.join(ref_dir, "ref_0.png")
+        ref_image.save(ref_image_path)
+
+        # FID expects paths to directories containing images
+        fid_score = calculate_fid_given_paths([gen_dir, ref_dir], batch_size=1, device="cpu", dims=2048) # Using CPU for FID, adjust device if Inception model supports MPS
+        print(f"FID Score: {fid_score}")
+        return fid_score
+
 
 # 5. Database Sync
-async def upload_to_supabase_storage_and_db(image: Image.Image, prompt: str):
+async def upload_to_supabase_storage_and_db(image: Image.Image, prompt: str, seed: int, model_version: str, fid_score: float = None):
     """
-    Uploads the image to Supabase Storage and records its path in the synthetic_samples table.
+    Uploads the image to Supabase Storage and records its path and metadata in the synthetic_samples table.
     """
     if SUPABASE_URL == "https://phkpdwzhduwtvktapkhr.supabase.co" or SUPABASE_KEY == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoa3Bkd3poZHV3dHZrdGFwa2hyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDk3MTgyNSwiZXhwIjoyMDg2NTQ3ODI1fQ.uKV98CsJtyCoe3AEAS9m9ms4JKGbCFrpNoynf7FUr8s":
         print("Supabase credentials not configured. Skipping upload and database sync.")
@@ -111,6 +108,9 @@ async def upload_to_supabase_storage_and_db(image: Image.Image, prompt: str):
             data, count = await supabase_client.table("synthetic_samples").insert({
                 "prompt": prompt,
                 "image_url": public_url,
+                "seed": seed,
+                "model_version": model_version,
+                "fid_score": fid_score,
                 "generated_at": datetime.datetime.utcnow().isoformat() + "Z"
             }).execute()
             print("Database insert response:", data)
@@ -131,16 +131,22 @@ async def main():
     # Prompt Engineering
     processed_prompt = create_medical_prompt(base_medical_prompt)
 
-    # Image Generation
-    generated_image = generate_image(processed_prompt)
+    # Image Generation using inference_logic
+    generated_image, used_seed, model_ver = generate_medical_image_with_embeddings(processed_prompt)
+
+    # Quality Metric Calculation (FID Score)
+    fid_score = None
+    if generated_image:
+        fid_score = calculate_fid_score(generated_image, processed_prompt)
 
     # Save image locally for verification (optional)
-    # generated_image.save("generated_medical_image.png")
-    # print("Image saved locally as generated_medical_image.png")
+    # if generated_image:
+    #     generated_image.save("generated_medical_image.png")
+    #     print("Image saved locally as generated_medical_image.png")
 
     # Supabase Sync
-    await upload_to_supabase_storage_and_db(generated_image, processed_prompt)
+    if generated_image:
+        await upload_to_supabase_storage_and_db(generated_image, processed_prompt, used_seed, model_ver, fid_score)
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())

@@ -23,7 +23,13 @@ export default function AugmentPage() {
         // fetchJobs();
     }, []);
 
-    const handleStartJob = async (model: AugmentationModel, sampleCount: number, prompt: string) => {
+    const handleStartJob = async (
+        model: AugmentationModel,
+        sampleCount: number,
+        prompt: string,
+        negativePrompt: string,
+        conditioning: any
+    ) => {
         setIsGenerating(true);
 
         const newJob: AugmentationJob = {
@@ -33,15 +39,21 @@ export default function AugmentPage() {
             model,
             sampleCount,
             prompt,
+            negativePrompt,
+            label: conditioning.label,
+            guidanceScale: conditioning.guidanceScale,
+            samplingSteps: conditioning.samplingSteps,
+            seed: conditioning.seed,
             progress: 0,
         };
 
         setJobs((prev) => [newJob, ...prev]);
 
-        // Simulate progress
+        // Simulate Supabase Realtime & Generation Progress
         let currentProgress = 0;
         const interval = setInterval(() => {
-            currentProgress += Math.floor(Math.random() * 15) + 5;
+            currentProgress += Math.floor(Math.random() * 8) + 2;
+
             if (currentProgress >= 100) {
                 currentProgress = 100;
                 clearInterval(interval);
@@ -51,7 +63,24 @@ export default function AugmentPage() {
             setJobs((prev) =>
                 prev.map((j) => (j.id === newJob.id ? { ...j, progress: currentProgress } : j))
             );
-        }, 1500);
+
+            // Simulate real-time sample arrival at 50% and 90%
+            if (currentProgress === 50 || currentProgress === 90) {
+                addMockSample(newJob.id, conditioning.label);
+            }
+        }, 1000);
+    };
+
+    const addMockSample = (jobId: string, label: string) => {
+        const mockSample: SyntheticSample = {
+            id: Math.random().toString(36).substr(2, 9),
+            jobId,
+            imageUrl: `https://picsum.photos/seed/${Math.random()}/512/512`,
+            fidScore: 0.12 + Math.random() * 0.05,
+            label,
+            createdAt: new Date().toISOString(),
+        };
+        setSamples((prev) => [mockSample, ...prev]);
     };
 
     const finishJob = (jobId: string) => {
@@ -59,8 +88,6 @@ export default function AugmentPage() {
             prev.map((j) => (j.id === jobId ? { ...j, status: 'completed', progress: 100 } : j))
         );
         setIsGenerating(false);
-
-        // Generate mock samples
         const job = jobs.find(j => j.id === jobId);
         const mockSamples: SyntheticSample[] = Array.from({ length: 4 }).map((_, i) => ({
             id: Math.random().toString(36).substr(2, 9),

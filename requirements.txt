@@ -2,3 +2,7 @@ torch
 diffusers
 supabase
 Pillow
+accelerate
+clean-fid
+scipy
+numpy

@@ -9,7 +9,13 @@ export interface AugmentationJob {
   model: AugmentationModel;
   sampleCount: number;
   prompt: string;
+  negativePrompt?: string;
+  label?: string;
+  guidanceScale: number;
+  samplingSteps: number;
+  seed: number;
   progress: number; // 0 to 100
+  denoisingStep?: number;
 }
 
 export interface SyntheticSample {
@@ -17,6 +23,8 @@ export interface SyntheticSample {
   jobId: string;
   imageUrl: string;
   fidScore: number;
+  label?: string;
   metadata?: Record<string, any>;
   createdAt: string;
 }
+
