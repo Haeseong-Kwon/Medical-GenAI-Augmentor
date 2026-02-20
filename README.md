@@ -1,5 +1,13 @@
 # Research Report: Diffusion Model Based Medical Image Synthesis and Rare Disease Data Augmentation
 
+<div align="center">
+  <img src="./medical_genai_augmentor_demo.gif" width="85%" />
+  <p>
+    <b>Real-time Synthesis & Validation Pipeline</b>: Demonstrating the Latent Diffusion-based medical data augmentation workflow. The interface visualizes the denoising process (from Gaussian noise to high-fidelity clinical imagery) and performs simultaneous impact analysis to ensure synthetic data aligns with clinical ground-truth distributions.
+  </p>
+</div>
+
+
 ## 1. Research Motivation & Necessity
 현대 의료 AI 연구의 가장 큰 병목 현상은 고품질 의료 데이터의 획득 비용이 매우 높고, 엄격한 개인정보 보호 규제(Privacy Regulations)로 인해 데이터 공유가 제한적이라는 점에 있다. 특히 희귀 질환(Rare Disease)의 경우 실무에서 접할 수 있는 샘플 수가 극소수에 불과하여, 특정 질병군에 대한 데이터 불균형(Class Imbalance) 문제가 심화되고 있다. 이러한 불량한 데이터 분포는 딥러닝 모델의 일반화 성능(Generalization Performance)을 저하시키며, 소수 클래스에 대한 위음성(False Negative) 발생 확률을 높여 임상 현장에서의 신뢰도를 실추시킨다. 본 연구는 이러한 데이터 희소성 문제를 극복하기 위해 생성형 AI(Generative AI)를 활용하여 의학적으로 타당한 합성 데이터(Synthetic Data)를 대량으로 생성하고, 이를 통해 모델의 진단 정확도를 상향 평준화하는 것을 목적으로 한다.
 
