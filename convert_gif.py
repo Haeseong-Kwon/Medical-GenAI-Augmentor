@@ -12,17 +12,27 @@ def convert_webp_to_gif(webp_path, gif_path):
         if not frames:
             print("No frames found!")
             return False
-        print(f"Found {len(frames)} frames. Trying to speed it up by skipping frames.")
+        print(f"Found {len(frames)} frames. Trying to slow down the end.")
         
-        # Keep every 6th frame to speed up significantly (approx 4x-5x speed)
-        fast_frames = frames[::6]
+        # Keep every 4th frame to reduce size
+        fast_frames = frames[::4]
+        
+        # Create a duration list to make the start fast and the end slow
+        durations = []
+        slow_start_idx = int(len(fast_frames) * 0.5) # The latter 50% includes viewing galleries and charts
+        
+        for i in range(len(fast_frames)):
+            if i < slow_start_idx:
+                durations.append(40) # 40ms for fast forwarding
+            else:
+                durations.append(160) # 160ms for normal speed (4x original 40ms)
         
         fast_frames[0].save(
             gif_path,
             save_all=True,
             append_images=fast_frames[1:],
             loop=0,
-            duration=40, # 40ms per frame (25fps) which is well-supported by browsers
+            duration=durations,
             optimize=True
         )
         print("Done!")
