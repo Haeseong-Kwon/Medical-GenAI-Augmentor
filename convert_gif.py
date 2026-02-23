@@ -28,7 +28,7 @@ def convert_webp_to_gif(webp_path, gif_path):
         print(f"Error: {e}")
         return False
 
-webp_file = "/Users/haeseong/.gemini/antigravity/brain/8801b381-6683-43d5-9365-c7be8a67499b/ui_exploration_1771577654274.webp"
-gif_file = "/Users/haeseong/Desktop/Developing/medical-genai/medical_genai_augmentor_demo.gif"
+webp_file = "/Users/haeseong/.gemini/antigravity/brain/8ecf5316-5507-4e0b-9501-365467639ffe/medical_augmentor_demo_v2_1771846388703.webp"
+gif_file = "/Users/haeseong/Desktop/Developing/medical-genai/medical_augmentor_demo.gif"
 
 convert_webp_to_gif(webp_file, gif_file)
