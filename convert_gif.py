@@ -14,15 +14,15 @@ def convert_webp_to_gif(webp_path, gif_path):
             return False
         print(f"Found {len(frames)} frames. Trying to speed it up by skipping frames.")
         
-        # Keep every 3rd frame to speed up (3x speed)
-        fast_frames = frames[::3]
+        # Keep every 6th frame to speed up significantly (approx 4x-5x speed)
+        fast_frames = frames[::6]
         
         fast_frames[0].save(
             gif_path,
             save_all=True,
             append_images=fast_frames[1:],
             loop=0,
-            duration=30, # 30ms per frame to make it play fast
+            duration=40, # 40ms per frame (25fps) which is well-supported by browsers
             optimize=True
         )
         print("Done!")
