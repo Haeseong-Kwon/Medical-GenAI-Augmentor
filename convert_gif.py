@@ -12,15 +12,18 @@ def convert_webp_to_gif(webp_path, gif_path):
         if not frames:
             print("No frames found!")
             return False
+        print(f"Found {len(frames)} frames. Trying to speed it up by skipping frames.")
         
-        print(f"Found {len(frames)} frames.")
-        frames[0].save(
+        # Keep every 3rd frame to speed up (3x speed)
+        fast_frames = frames[::3]
+        
+        fast_frames[0].save(
             gif_path,
             save_all=True,
-            append_images=frames[1:],
+            append_images=fast_frames[1:],
             loop=0,
-            duration=img.info.get('duration', 100),
-            optimize=False
+            duration=30, # 30ms per frame to make it play fast
+            optimize=True
         )
         print("Done!")
         return True
