@@ -29,49 +29,49 @@ export default function ImpactChart() {
         <div className="space-y-6">
             {/* KPI Widgets */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 relative overflow-hidden group">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 relative overflow-hidden group shadow-sm">
                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Zap className="w-12 h-12 text-yellow-400" />
+                        <Zap className="w-12 h-12 text-yellow-500" />
                     </div>
-                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">Performance Boost</p>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Performance Boost</p>
                     <div className="flex items-baseline gap-2">
-                        <h3 className="text-3xl font-extrabold font-outfit text-white">+14.2%</h3>
-                        <span className="text-[10px] text-green-400 font-bold flex items-center gap-0.5">
+                        <h3 className="text-3xl font-extrabold font-outfit text-slate-800">+14.2%</h3>
+                        <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-0.5">
                             <TrendingUp className="w-3 h-3" /> ∆ Accuracy
                         </span>
                     </div>
-                    <p className="text-[10px] text-white/20 mt-2 italic">Validated on hold-out clinical set</p>
+                    <p className="text-[10px] text-slate-400 mt-2 italic">Validated on hold-out clinical set</p>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 relative overflow-hidden group">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 relative overflow-hidden group shadow-sm">
                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Activity className="w-12 h-12 text-blue-400" />
+                        <Activity className="w-12 h-12 text-sky-500" />
                     </div>
-                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">FID Stability Score</p>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">FID Stability Score</p>
                     <div className="flex items-baseline gap-2">
-                        <h3 className="text-3xl font-extrabold font-outfit text-white">0.142</h3>
-                        <span className="text-[10px] text-blue-400 font-bold tracking-tighter uppercase">Ultra High Fid</span>
+                        <h3 className="text-3xl font-extrabold font-outfit text-slate-800">0.142</h3>
+                        <span className="text-[10px] text-sky-600 font-bold tracking-tighter uppercase">Ultra High Fid</span>
                     </div>
-                    <p className="text-[10px] text-white/20 mt-2 italic">Structural Structural Similarity index</p>
+                    <p className="text-[10px] text-slate-400 mt-2 italic">Structural Structural Similarity index</p>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 relative overflow-hidden group">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 relative overflow-hidden group shadow-sm">
                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <BarChart3 className="w-12 h-12 text-purple-400" />
+                        <BarChart3 className="w-12 h-12 text-violet-500" />
                     </div>
-                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">Dataset Balance Factor</p>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Dataset Balance Factor</p>
                     <div className="flex items-baseline gap-2">
-                        <h3 className="text-3xl font-extrabold font-outfit text-white">0.98</h3>
-                        <span className="text-[10px] text-purple-400 font-bold tracking-tighter uppercase">Minimizing Bias</span>
+                        <h3 className="text-3xl font-extrabold font-outfit text-slate-800">0.98</h3>
+                        <span className="text-[10px] text-violet-600 font-bold tracking-tighter uppercase">Minimizing Bias</span>
                     </div>
-                    <p className="text-[10px] text-white/20 mt-2 italic">Shannon diversity index improved</p>
+                    <p className="text-[10px] text-slate-400 mt-2 italic">Shannon diversity index improved</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Line Chart: Training Curve */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
-                    <div className="flex items-center gap-2 mb-6 text-blue-400 uppercase tracking-widest text-xs font-bold">
+                <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div className="flex items-center gap-2 mb-6 text-sky-600 uppercase tracking-widest text-xs font-bold">
                         <Activity className="w-4 h-4" />
                         Accuracy Evaluation Delta
                     </div>
@@ -80,33 +80,33 @@ export default function ImpactChart() {
                             <AreaChart data={accuracyData}>
                                 <defs>
                                     <linearGradient id="colorAug" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" vertical={false} />
                                 <XAxis
                                     dataKey="epoch"
-                                    stroke="rgba(255,255,255,0.3)"
+                                    stroke="#94a3b8"
                                     fontSize={10}
                                     tickLine={false}
                                     axisLine={false}
                                 />
                                 <YAxis
-                                    stroke="rgba(255,255,255,0.3)"
+                                    stroke="#94a3b8"
                                     fontSize={10}
                                     tickLine={false}
                                     axisLine={false}
                                     domain={[0.4, 1.0]}
                                 />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '12px', color: '#334155' }}
                                     itemStyle={{ fontSize: '10px' }}
                                 />
                                 <Area
                                     type="monotone"
                                     dataKey="augmented"
-                                    stroke="#3b82f6"
+                                    stroke="#0ea5e9"
                                     strokeWidth={3}
                                     fillOpacity={1}
                                     fill="url(#colorAug)"
@@ -114,7 +114,7 @@ export default function ImpactChart() {
                                 <Area
                                     type="monotone"
                                     dataKey="baseline"
-                                    stroke="#ffffff33"
+                                    stroke="#94a3b8"
                                     strokeWidth={2}
                                     fill="transparent"
                                     strokeDasharray="5 5"
@@ -123,56 +123,56 @@ export default function ImpactChart() {
                         </ResponsiveContainer>
                     </div>
                     <div className="mt-4 flex gap-4">
-                        <div className="flex items-center gap-1.5 text-[10px] text-white/60">
-                            <div className="w-3 h-0.5 bg-blue-500 rounded-full" />
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-600">
+                            <div className="w-3 h-0.5 bg-sky-500 rounded-full" />
                             With Synthetic Augmentation
                         </div>
-                        <div className="flex items-center gap-1.5 text-[10px] text-white/40">
-                            <div className="w-3 h-0.5 bg-white/40 rounded-full border-t border-dashed" />
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                            <div className="w-3 h-0.5 bg-slate-400 rounded-full border-t border-dashed border-slate-400" />
                             Baseline (Collected Clinical)
                         </div>
                     </div>
                 </div>
 
                 {/* Bar Chart: Distribution */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
-                    <div className="flex items-center gap-2 mb-6 text-purple-400 uppercase tracking-widest text-xs font-bold">
+                <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div className="flex items-center gap-2 mb-6 text-violet-600 uppercase tracking-widest text-xs font-bold">
                         <BarChart3 className="w-4 h-4" />
                         Class Re-balancing Impact
                     </div>
                     <div className="h-64 w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={distributionData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" vertical={false} />
                                 <XAxis
                                     dataKey="label"
-                                    stroke="rgba(255,255,255,0.3)"
+                                    stroke="#94a3b8"
                                     fontSize={10}
                                     tickLine={false}
                                     axisLine={false}
                                 />
                                 <YAxis
-                                    stroke="rgba(255,255,255,0.3)"
+                                    stroke="#94a3b8"
                                     fontSize={10}
                                     tickLine={false}
                                     axisLine={false}
                                 />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '12px', color: '#334155' }}
                                     itemStyle={{ fontSize: '10px' }}
                                 />
                                 <Bar dataKey="synthetic" fill="#8b5cf6" radius={[4, 4, 0, 0]} opacity={0.6} />
-                                <Bar dataKey="count" fill="#ffffff" radius={[4, 4, 0, 0]} opacity={0.2} />
+                                <Bar dataKey="count" fill="#cbd5e1" radius={[4, 4, 0, 0]} opacity={0.6} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
                     <div className="mt-4 flex gap-4">
-                        <div className="flex items-center gap-1.5 text-[10px] text-purple-400">
-                            <div className="w-3 h-3 bg-purple-500 rounded-sm opacity-60" />
+                        <div className="flex items-center gap-1.5 text-[10px] text-violet-600">
+                            <div className="w-3 h-3 bg-violet-500 rounded-sm opacity-60" />
                             Synthetic Buffer
                         </div>
-                        <div className="flex items-center gap-1.5 text-[10px] text-white/40">
-                            <div className="w-3 h-3 bg-white rounded-sm opacity-20" />
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                            <div className="w-3 h-3 bg-slate-400 rounded-sm opacity-60" />
                             Clinical Original
                         </div>
                     </div>

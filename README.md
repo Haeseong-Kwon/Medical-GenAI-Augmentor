@@ -1,7 +1,7 @@
 # Research Report: Diffusion Model Based Medical Image Synthesis and Rare Disease Data Augmentation
 
 <div align="center">
-  <img src="./medical_genai_augmentor_demo.gif" width="85%" />
+  <img src="./medical_augmentor_demo.gif" width="85%" />
   <p>
     <b>Real-time Synthesis & Validation Pipeline</b>: Demonstrating the Latent Diffusion-based medical data augmentation workflow. The interface visualizes the denoising process (from Gaussian noise to high-fidelity clinical imagery) and performs simultaneous impact analysis to ensure synthetic data aligns with clinical ground-truth distributions.
   </p>

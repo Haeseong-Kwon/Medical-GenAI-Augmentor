@@ -138,43 +138,43 @@ export default function AugmentPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white p-4 md:p-8 font-sans">
+        <div className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8 font-sans">
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header */}
                 <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <div className="flex items-center gap-2 text-blue-400 mb-2">
+                        <div className="flex items-center gap-2 text-sky-600 mb-2">
                             <BrainCircuit className="w-5 h-5" />
                             <span className="text-xs font-bold uppercase tracking-[0.2em]">Guardion Platform</span>
                         </div>
-                        <h1 className="text-4xl font-extrabold font-outfit tracking-tight">
-                            Medical <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">GenAI Augmentor</span>
+                        <h1 className="text-4xl font-extrabold font-outfit tracking-tight text-slate-900">
+                            Medical <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-violet-600">GenAI Augmentor</span>
                         </h1>
-                        <p className="text-white/40 mt-1 max-w-xl text-sm italic">
+                        <p className="text-slate-500 mt-1 max-w-xl text-sm italic">
                             Empowering clinical researchers with high-fidelity, privacy-preserving synthetic medical imaging datasets.
                         </p>
                     </div>
 
                     <div className="flex gap-4">
-                        <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-3 flex flex-col items-center">
-                            <Layers className="w-4 h-4 text-blue-400 mb-1" />
-                            <span className="text-xl font-bold font-mono">{jobs.length}</span>
-                            <span className="text-[10px] text-white/40 uppercase font-bold">Total Jobs</span>
+                        <div className="bg-white border border-slate-200 shadow-sm rounded-2xl px-5 py-3 flex flex-col items-center">
+                            <Layers className="w-4 h-4 text-sky-600 mb-1" />
+                            <span className="text-xl font-bold font-mono text-slate-800">{jobs.length}</span>
+                            <span className="text-[10px] text-slate-500 uppercase font-bold">Total Jobs</span>
                         </div>
-                        <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-3 flex flex-col items-center">
-                            <Database className="w-4 h-4 text-purple-400 mb-1" />
-                            <span className="text-xl font-bold font-mono">{samples.length}</span>
-                            <span className="text-[10px] text-white/40 uppercase font-bold">Samples</span>
+                        <div className="bg-white border border-slate-200 shadow-sm rounded-2xl px-5 py-3 flex flex-col items-center">
+                            <Database className="w-4 h-4 text-violet-600 mb-1" />
+                            <span className="text-xl font-bold font-mono text-slate-800">{samples.length}</span>
+                            <span className="text-[10px] text-slate-500 uppercase font-bold">Samples</span>
                         </div>
                     </div>
                 </header>
 
                 <div className="max-w-[1400px] mx-auto space-y-12">
                     {/* Tab Navigation */}
-                    <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 w-fit">
+                    <div className="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200 w-fit">
                         <button
                             onClick={() => setActiveTab('config')}
-                            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'config' ? 'bg-blue-600 text-white shadow-lg' : 'text-white/40 hover:text-white/60'
+                            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'config' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
                             <Layers className="w-4 h-4" />
@@ -182,7 +182,7 @@ export default function AugmentPage() {
                         </button>
                         <button
                             onClick={() => setActiveTab('eval')}
-                            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'eval' ? 'bg-purple-600 text-white shadow-lg' : 'text-white/40 hover:text-white/60'
+                            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'eval' ? 'bg-violet-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
                             <BarChart4 className="w-4 h-4" />
