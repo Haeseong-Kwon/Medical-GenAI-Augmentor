@@ -20,12 +20,15 @@ def convert_webp_to_gif(webp_path, gif_path):
         # Create a duration list to make the start fast and the end slow
         durations = []
         slow_start_idx = int(len(fast_frames) * 0.5) # The latter 50% includes viewing galleries and charts
+        very_slow_idx = int(len(fast_frames) * 0.8) # The last 20% is Impact Analysis and Export
         
         for i in range(len(fast_frames)):
             if i < slow_start_idx:
                 durations.append(40) # 40ms for fast forwarding
+            elif i < very_slow_idx:
+                durations.append(100) # 100ms for somewhat slow (Gallery)
             else:
-                durations.append(160) # 160ms for normal speed (4x original 40ms)
+                durations.append(400) # 400ms for very slow (Impact Analysis, to emphasize)
         
         fast_frames[0].save(
             gif_path,
